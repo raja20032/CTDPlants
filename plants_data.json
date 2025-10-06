@@ -1,0 +1,112 @@
+{
+  "plants": [
+    {
+      "id": 1,
+      "name": "Sunflower",
+      "description": "Bright, cheerful flowers that follow the sun",
+      "price": 12.99,
+      "size": "big",
+      "color": "yellow",
+      "image": "https://images.unsplash.com/photo-1597848212624-e593d17819b1?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 2,
+      "name": "Red Rose Bush",
+      "description": "Classic red roses perfect for any garden",
+      "price": 24.99,
+      "size": "medium",
+      "color": "red",
+      "image": "https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 3,
+      "name": "Lavender",
+      "description": "Fragrant purple flowers with calming properties",
+      "price": 18.5,
+      "size": "medium",
+      "color": "purple",
+      "image": "https://images.unsplash.com/photo-1595751520207-ca9bb1b8d63e?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 4,
+      "name": "Marigold",
+      "description": "Vibrant orange flowers that bloom all season",
+      "price": 8.99,
+      "size": "small",
+      "color": "orange",
+      "image": "https://images.unsplash.com/photo-1583292650898-7d22cd27ca6f?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 5,
+      "name": "White Daisy",
+      "description": "Simple, elegant white flowers",
+      "price": 10.99,
+      "size": "small",
+      "color": "white",
+      "image": "https://images.unsplash.com/photo-1463320898844-8c5c17e60c15?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 6,
+      "name": "Blue Hydrangea",
+      "description": "Large clusters of beautiful blue flowers",
+      "price": 32.99,
+      "size": "big",
+      "color": "blue",
+      "image": "https://images.unsplash.com/photo-1594736797933-d0b22d0fa3b6?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 7,
+      "name": "Pink Tulips",
+      "description": "Delicate spring flowers in soft pink",
+      "price": 15.99,
+      "size": "medium",
+      "color": "pink",
+      "image": "https://images.unsplash.com/photo-1520637836862-4d197d17c635?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 8,
+      "name": "Basil Plant",
+      "description": "Fresh herbs for cooking, easy to grow",
+      "price": 6.99,
+      "size": "small",
+      "color": "green",
+      "image": "https://images.unsplash.com/photo-1618164436241-4473940d1f5c?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 9,
+      "name": "Yellow Daffodils",
+      "description": "Bright spring bulbs that return every year",
+      "price": 13.99,
+      "size": "medium",
+      "color": "yellow",
+      "image": "https://images.unsplash.com/photo-1553692066-4b6e55b16da4?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 10,
+      "name": "Purple Petunias",
+      "description": "Colorful cascading flowers perfect for containers",
+      "price": 9.99,
+      "size": "small",
+      "color": "purple",
+      "image": "https://images.unsplash.com/photo-1597848212627-5962d3c2489e?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 11,
+      "name": "Red Geranium",
+      "description": "Classic red flowers that bloom continuously",
+      "price": 14.99,
+      "size": "medium",
+      "color": "red",
+      "image": "https://images.unsplash.com/photo-1563910187-a7a009f0593a?w=300&h=300&fit=crop"
+    },
+    {
+      "id": 12,
+      "name": "Oak Tree Sapling",
+      "description": "A mighty oak that will grow for generations",
+      "price": 45.99,
+      "size": "big",
+      "color": "green",
+      "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=300&fit=crop"
+    }
+  ]
+}

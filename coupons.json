@@ -1,0 +1,24 @@
+{
+  "coupons": {
+    "WELCOME10": {
+      "discount_percent": 10,
+      "description": "Welcome discount - 10% off"
+    },
+    "SPRING20": {
+      "discount_percent": 20,
+      "description": "Spring special - 20% off"
+    },
+    "SAVE5": {
+      "discount_percent": 5,
+      "description": "Save 5% on your order"
+    },
+    "GARDEN25": {
+      "discount_percent": 25,
+      "description": "Garden lover special - 25% off"
+    },
+    "NEWCUSTOMER": {
+      "discount_percent": 15,
+      "description": "New customer discount - 15% off"
+    }
+  }
+}
