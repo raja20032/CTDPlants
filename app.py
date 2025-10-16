@@ -66,6 +66,43 @@ def calculate_total():
     return total
 
 
+def calculate_size_discount(plants: List[Dict], subtotal: float):
+    """Return automatic size-based discount (amount, percent, label).
+
+    Rules:
+    - 3 or more big plants → 20%
+    - 4 or more medium plants → 15%
+    - 5 or more small plants → 10%
+
+    Chooses the highest eligible discount and applies it to the whole subtotal.
+    """
+    if not st.session_state.cart:
+        return 0.0, 0, ""
+
+    id_to_size = {p['id']: p['size'] for p in plants}
+    size_counts = {"big": 0, "medium": 0, "small": 0}
+
+    for plant_id, item in st.session_state.cart.items():
+        size = id_to_size.get(plant_id)
+        if size in size_counts:
+            size_counts[size] += item['quantity']
+
+    candidates = []
+    if size_counts["big"] >= 3:
+        candidates.append((20, "3 big plants"))
+    if size_counts["medium"] >= 4:
+        candidates.append((15, "4 medium plants"))
+    if size_counts["small"] >= 5:
+        candidates.append((10, "5 small plants"))
+
+    if not candidates:
+        return 0.0, 0, ""
+
+    best_percent, label = max(candidates, key=lambda t: t[0])
+    discount_amount = subtotal * (best_percent / 100)
+    return discount_amount, best_percent, label
+
+
 def apply_coupon(coupon_code: str, total: float):
     """Apply coupon discount"""
     coupons = load_coupons_data()
@@ -216,8 +253,14 @@ def show_cart_page():
 
     # Calculate totals
     total_noGST = calculate_total()
-    GST_amount = total_noGST*0.1
-    final_total = total_noGST + GST_amount
+
+    # Load plants for size lookups and compute automatic size discount
+    plants_data = load_plants_data()
+    auto_discount_amount, auto_discount_percent, auto_discount_label = calculate_size_discount(plants_data['plants'], total_noGST)
+
+    subtotal_after_auto = total_noGST - auto_discount_amount
+    GST_amount = subtotal_after_auto * 0.1
+    final_total = subtotal_after_auto + GST_amount
 
 
     # Coupon section
@@ -231,10 +274,10 @@ def show_cart_page():
     discount_percent = 0
 
     if coupon_code:
-        discount_amount, discount_percent = apply_coupon(coupon_code, total_noGST)
+        discount_amount, discount_percent = apply_coupon(coupon_code, subtotal_after_auto)
         if discount_amount > 0:
             st.success(f"Coupon applied! You saved {discount_percent}% (${discount_amount:.2f})")
-            GST_amount = (total_noGST-discount_amount)*0.1 #Apply GST to discounted subtotal
+            GST_amount = (subtotal_after_auto - discount_amount) * 0.1  # Apply GST to discounted subtotal
         else:
             st.error("Invalid coupon code")
 
@@ -244,24 +287,22 @@ def show_cart_page():
     summary_col1, summary_col2 = st.columns([2, 1])
     with summary_col1:
         st.write("Subtotal:")
+        if auto_discount_amount > 0:
+            st.write(f"Auto discount ({auto_discount_percent}% - {auto_discount_label}):")
         if discount_amount > 0:
             st.write(f"Discount ({discount_percent}%):")
-            st.write("GST(10%):") #Include GST
-            st.write("**Total:**")
-        else:
-            st.write("GST(10%):") #Include GST
-            st.write("**Total:**")
+        st.write("GST(10%):") #Include GST
+        st.write("**Total:**")
 
     with summary_col2:
         st.write(f"${total_noGST:.2f}") #Subtotal
+        if auto_discount_amount > 0:
+            st.write(f"-${auto_discount_amount:.2f}")
         if discount_amount > 0:
             st.write(f"-${discount_amount:.2f}")
-            st.write(f"${GST_amount:.2f}") #Include GST
-            final_total = total_noGST - discount_amount + GST_amount
-            st.write(f"**${final_total:.2f}**")
-        else:
-            st.write(f"${GST_amount:.2f}") #Include GST
-            st.write(f"**${final_total:.2f}**")
+            final_total = subtotal_after_auto - discount_amount + GST_amount
+        st.write(f"${GST_amount:.2f}") #Include GST
+        st.write(f"**${final_total:.2f}**")
 
     # Checkout button
     st.divider()
@@ -274,17 +315,17 @@ def show_cart_page():
             next_key = 1
         st.session_state.history[next_key] = {
             "items": st.session_state.cart.copy(), #copy cart, plant_id(name,price,quantity) 
-            "subtotal": subtotal, # add subtotal amt
-            "GST": GST_amount, # add GST amt
-            "final_total": final_total # add final_total inside
+            "subtotal": total_noGST, # original subtotal before discounts
+            "GST": GST_amount, # GST after discounts
+            "final_total": final_total # final total after all discounts + GST
         }
-        if coupon_code:
-             discount_str = "-$"+str(round(discount_amount,2))
-             st.session_state.history[next_key].update({"Discount": discount_str}) # add discount amt
-             st.session_state.history[next_key].update({"Coupon": coupon_code})
+        total_discount_taken = auto_discount_amount + (discount_amount if discount_amount > 0 else 0)
+        if total_discount_taken > 0:
+            discount_str = "-$" + str(round(total_discount_taken, 2))
+            st.session_state.history[next_key].update({"Discount": discount_str})
         else:
             st.session_state.history[next_key].update({"Discount": "NIL"})
-            st.session_state.history[next_key].update({"Coupon": "NIL"})
+        st.session_state.history[next_key].update({"Coupon": coupon_code if discount_amount > 0 else "NIL"})
 
         st.session_state.cart = {}  # Clear cart after checkout
 def show_history_page(): #Show Order History page
