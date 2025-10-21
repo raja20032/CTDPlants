@@ -9,7 +9,131 @@ st.set_page_config(
     page_icon="🌱",
     layout="wide"
 )
-
+# Custom CSS for better styling
+st.markdown("""
+    <style>
+    /* Main color scheme */
+    :root {
+        --primary-green: #2d6a4f;
+        --light-green: #52b788;
+        --accent-green: #95d5b2;
+        --bg-cream: #f8f9fa;
+    }
+    
+    /* Header styling */
+    .main-header {
+        background: linear-gradient(135deg, #2d6a4f 0%, #52b788 100%);
+        padding: 2rem;
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* Plant card styling */
+    .plant-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 2px solid #e9ecef;
+        height: 100%;
+    }
+    
+    .plant-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(45,106,79,0.2);
+        border-color: #52b788;
+    }
+    
+    /* Badge styling */
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0.25rem;
+    }
+    
+    .badge-size {
+        background-color: #d3f8e2;
+        color: #2d6a4f;
+    }
+    
+    .badge-color {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    /* Cart item styling */
+    .cart-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        border-left: 4px solid #52b788;
+    }
+    
+    /* Summary box */
+    .summary-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 2px solid #52b788;
+        margin-top: 1rem;
+    }
+    
+    /* Button styling */
+    .stButton>button {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        transform: scale(1.02);
+    }
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #141414;
+    }
+    
+    /* Metric styling */
+    [data-testid="stMetric"] {
+        background-color: #4d4d4d;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    /* Divider styling */
+    hr {
+        border-color: #52b788;
+        opacity: 0.3;
+    }
+    
+    /* Price styling */
+    .price-tag {
+        color: #2d6a4f;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    /* Order card styling */
+    .order-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        border-left: 5px solid #52b788;
+    }
+    </style>
+""", unsafe_allow_html=True)
 # Load data functions
 @st.cache_data
 def load_plants_data():
@@ -38,12 +162,20 @@ def add_to_cart(plant_id: int, plant_name: str, plant_price: float):
     if plant_id in st.session_state.cart:
         st.session_state.cart[plant_id]['quantity'] += 1
     else:
-        st.session_state.cart[plant_id] = {      #dict(dict(value),value)
+        st.session_state.cart[plant_id] = {
             'name': plant_name,
             'price': plant_price,
             'quantity': 1
         }
-    st.success(f"Added {plant_name} to cart!")
+    # Set flag to show success message under the corresponding button
+    st.session_state.last_added = plant_name
+    # cart = { 
+    #   plant_id: {
+    #       'name': plant_name, 
+    #       'price': plant_price, 
+    #       'quantity': 1
+    #   } 
+    #}
 
 def remove_from_cart(plant_id: int):
     """Remove a plant from the cart"""
@@ -137,9 +269,16 @@ def display_plant_card(plant: Dict):
         with col2:
             st.caption(f"Color: {plant['color'].title()}")
 
-        if st.button(f"Add to Cart", key=f"add_{plant['id']}", use_container_width=True):
-            add_to_cart(plant['id'], plant['name'], plant['price'])
-
+        # Use on_click callback so session_state updates before sidebar re-renders
+        st.button(
+            "Add to Cart",
+            key=f"add_{plant['id']}",
+            use_container_width=True,
+            on_click=add_to_cart,
+            args=(plant['id'], plant['name'], plant['price'])
+        )
+        if st.session_state.get("last_added") == plant["name"]: # ✅ Show success message right below the button
+            st.success(f"Added {plant['name']} to cart!")
 def show_main_page():
     """Display the main shopping page"""
     st.title("🌱 Garden Paradise - Plant Shop")
@@ -310,7 +449,7 @@ def show_cart_page():
         st.balloons()
         st.success("Thank you for your order! Your plants will be delivered soon! 🌱")
         if st.session_state.history:
-            next_key = max(st.session_state.history.keys()) + 1
+            next_key = max(st.session_state.history.keys()) + 1  #Save number of orders
         else:
             next_key = 1
         st.session_state.history[next_key] = {
