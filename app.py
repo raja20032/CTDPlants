@@ -167,7 +167,8 @@ def add_to_cart(plant_id: int, plant_name: str, plant_price: float):
             'price': plant_price,
             'quantity': 1
         }
-    st.success(f"Added {plant_name} to cart!")
+    # Set flag to show success message under the corresponding button
+    st.session_state.last_added = plant_name
     # cart = { 
     #   plant_id: {
     #       'name': plant_name, 
@@ -231,9 +232,16 @@ def display_plant_card(plant: Dict):
         with col2:
             st.caption(f"Color: {plant['color'].title()}")
 
-        if st.button(f"Add to Cart", key=f"add_{plant['id']}", use_container_width=True):
-            add_to_cart(plant['id'], plant['name'], plant['price'])
-
+        # Use on_click callback so session_state updates before sidebar re-renders
+        st.button(
+            "Add to Cart",
+            key=f"add_{plant['id']}",
+            use_container_width=True,
+            on_click=add_to_cart,
+            args=(plant['id'], plant['name'], plant['price'])
+        )
+        if st.session_state.get("last_added") == plant["name"]: # ✅ Show success message right below the button
+            st.success(f"Added {plant['name']} to cart!")
 def show_main_page():
     """Display the main shopping page"""
     st.title("🌱 Garden Paradise - Plant Shop")
