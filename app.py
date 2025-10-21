@@ -341,12 +341,64 @@ def show_main_page():
                 with cols[col_idx]:
                     display_plant_card(filtered_plants[plant_idx])
 
+def show_coupon_page():
+    """Coupon Page"""
+    st.title("Coupon Page")
+
+    # Load coupon data
+    with open('coupons.json', 'r') as f:
+        data = json.load(f)
+    coupons_data = data["coupons"]
+
+    # Define CSS style for rounded boxes
+    st.markdown("""
+    <style>
+    .rounded-box {
+        border: 2px solid #000000;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background-color: #E3EEEF;
+    }
+    .coupon-key {
+        font-weight: bold;
+        font-size: 22px;
+        color: #333333;
+        margin-bottom: 10px;
+    }
+    .coupon-info {
+        font-size: 18px;
+        color: #070D0D;
+        margin-left: 10px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Render each coupon inside its own rounded box
+    for code, details in coupons_data.items():
+        st.markdown(f"""
+        <div class='rounded-box'>
+            <div class='coupon-key'>{code}</div>
+            <div class='coupon-info'>Discount: {details['discount_percent']}%</div>
+            <div class='coupon-info'>Description: {details['description']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Back button
+    if st.button("← Back to Cart"):
+        st.session_state.page = 'cart'
+        st.rerun()
+
 def show_cart_page():
     """Display the cart page"""
     st.title("🛒 Your Shopping Cart")
 
     if st.button("← Back to Shop"):
         st.session_state.page = 'main'
+        st.rerun()
+    
+    if st.button("View Coupons"):
+        st.session_state.page = 'coupon'
         st.rerun()
 
     if not st.session_state.cart:
@@ -517,6 +569,8 @@ def main():
         show_cart_page()
     elif st.session_state.page == 'history': #Show Order History page
         show_history_page()
+    elif st.session_state.page == 'coupon': #Show Coupon Page
+        show_coupon_page()
 
 if __name__ == "__main__":
     main()
