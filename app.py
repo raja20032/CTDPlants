@@ -38,12 +38,19 @@ def add_to_cart(plant_id: int, plant_name: str, plant_price: float):
     if plant_id in st.session_state.cart:
         st.session_state.cart[plant_id]['quantity'] += 1
     else:
-        st.session_state.cart[plant_id] = {      #dict(dict(value),value)
+        st.session_state.cart[plant_id] = {
             'name': plant_name,
             'price': plant_price,
             'quantity': 1
         }
     st.success(f"Added {plant_name} to cart!")
+    # cart = { 
+    #   plant_id: {
+    #       'name': plant_name, 
+    #       'price': plant_price, 
+    #       'quantity': 1
+    #   } 
+    #}
 
 def remove_from_cart(plant_id: int):
     """Remove a plant from the cart"""
@@ -269,7 +276,7 @@ def show_cart_page():
         st.balloons()
         st.success("Thank you for your order! Your plants will be delivered soon! 🌱")
         if st.session_state.history:
-            next_key = max(st.session_state.history.keys()) + 1
+            next_key = max(st.session_state.history.keys()) + 1  #Save number of orders
         else:
             next_key = 1
         st.session_state.history[next_key] = {
